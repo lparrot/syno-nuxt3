@@ -1,0 +1,13 @@
+:root {
+  font-size: 0.8rem;
+  font-family: var(--font-family);
+}
+
+html, body, #__nuxt {
+  height: 100%;
+  margin: 0;
+}
+
+#__nuxt {
+  padding: 1rem;
+}

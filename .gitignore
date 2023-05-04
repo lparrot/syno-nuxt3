@@ -1,0 +1,13 @@
+node_modules
+*.log*
+.nitro
+.cache
+.env
+.DS_Store
+
+.idea
+.output
+.nuxt
+.release
+dist
+dist-electron
