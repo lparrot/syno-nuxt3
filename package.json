@@ -27,6 +27,7 @@
     "chart.js": "^4.3.0",
     "electron-log": "^4.4.8",
     "electron-settings": "^4.0.2",
+    "filesize": "^10.0.7",
     "lodash": "^4.17.21",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",

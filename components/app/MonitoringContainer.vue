@@ -6,7 +6,7 @@ import {interpolate} from "~/utils/string";
 
 interface Props {
   title: string
-  labels: string[]
+  labels: any[]
   options?: Partial<ChartOptions>
   segmentCount?: number,
   colors?: string[]
@@ -27,6 +27,11 @@ const last_data = ref(new Array(props.labels.length).fill('0'))
 
 const d_chartOptions = computed<ChartOptions>(() => {
   return deepMerge(<ChartOptions>{
+    maintainAspectRatio: false,
+    responsive: true,
+    animation: {
+      duration: 500,
+    },
     plugins: {
       legend: {
         position: "bottom",
@@ -37,6 +42,11 @@ const d_chartOptions = computed<ChartOptions>(() => {
         min: props.yMin,
         max: props.yMax,
       },
+      x: {
+        grid: {
+          display: false,
+        }
+      }
     }
   }, props.options)
 })
@@ -48,7 +58,7 @@ const chart_data: ChartData = {
 
 for (let i = 0; i < props.labels.length; i++) {
   chart_data.datasets.push({
-    label: interpolate(props.labels[i], last_data.value[i]),
+    label: typeof props.labels[i] === 'string' ? interpolate(props.labels[i], last_data.value[i]) : props.labels[i](last_data.value[i]),
     pointStyle: false,
     fill: true,
     data: new Array(props.segmentCount).fill(0),
@@ -60,7 +70,7 @@ for (let i = 0; i < props.labels.length; i++) {
 
 const updateData = (data: any) => {
   for (let i = 0; i < data.length; i++) {
-    chart_data.datasets[i].label = interpolate(props.labels[i], data[i])
+    chart_data.datasets[i].label = typeof props.labels[i] === 'string' ? interpolate(props.labels[i], data[i]) : props.labels[i](data[i])
     chart_data.datasets[i].data.shift()
     chart_data.datasets[i].data.push(data[i])
   }
