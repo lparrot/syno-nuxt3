@@ -1,3 +1,5 @@
+@import 'primeflex/primeflex.scss';
+
 :root {
   font-size: 0.8rem;
   font-family: var(--font-family);
@@ -10,4 +12,9 @@ html, body, #__nuxt {
 
 #__nuxt {
   padding: 1rem;
+}
+
+.p-menuitem-link.router-link-active.router-link-active-exact {
+  //background-color: var(--primary-100);
+  @include styleclass('bg-gray-200');
 }

@@ -11,8 +11,6 @@ export class SynoError extends Error {
 }
 
 export default function useSynoApi() {
-  const {$toast} = useNuxtApp();
-
   const init = async () => {
     apiInfos = await get('SYNO.API.Info', 'query')
   }
@@ -78,7 +76,7 @@ export default function useSynoApi() {
     }
   }
 
-  return {
+  return <SynoApi>{
     apiInfos,
     get,
     init,
