@@ -19,7 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   segmentCount: 50,
   colors: () => ['#2953dc'],
   yMin: 0,
-  yMax: 100
 })
 
 const chart = ref<Chart>()
