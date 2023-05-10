@@ -3,6 +3,11 @@ import {lstat} from 'node:fs/promises'
 import {cwd} from 'node:process'
 import path from "path";
 import settings from 'electron-settings';
+import {Server, Socket} from 'socket.io'
+
+export const SOCKET_IO_PORT = 8000
+export let io: Server | null = null
+export let socket: Socket | null = null
 
 process.env.ROOT = path.join(__dirname, '..')
 process.env.DIST = path.join(process.env.ROOT, 'dist-electron')
@@ -16,6 +21,12 @@ let win: BrowserWindow
 const preload = path.join(process.env.DIST, 'preload.js')
 
 async function bootstrap() {
+  io = new Server(SOCKET_IO_PORT, {})
+
+  io.on('connection', (socket_io) => {
+    socket = socket_io
+  })
+
   if (!settings.hasSync('session')) {
     settings.setSync('session', {
       sid: null,
@@ -24,9 +35,19 @@ async function bootstrap() {
     })
   }
 
+  if (!settings.hasSync('app')) {
+    settings.setSync('app', {
+      width: 1024,
+      height: 768
+    })
+  }
+
   win = new BrowserWindow({
+    height: settings.getSync('app.height') as any,
+    width: settings.getSync('app.width') as any,
+    x: settings.getSync('app.position.x') as any,
+    y: settings.getSync('app.position.y') as any,
     webPreferences: {
-      enablePreferredSizeMode: true,
       preload,
       nodeIntegrationInWorker: true,
       contextIsolation: true,
@@ -35,13 +56,48 @@ async function bootstrap() {
     },
   })
 
+  win.on('moved', () => {
+    const [x, y] = win.getPosition()
+    settings.setSync('app.position.x', x)
+    settings.setSync('app.position.y', y)
+  })
+
+  win.on('maximize', () => {
+    settings.setSync('app.maximized', true)
+  })
+
+  win.on('unmaximize', () => {
+    settings.setSync('app.maximized', false)
+  })
+
+  win.on('resized', () => {
+    const [width, height] = win.getSize();
+    settings.setSync('app.height', height)
+    settings.setSync('app.width', width)
+    socket?.emit('window:resized', win.getSize())
+
+    console.log(settings.getSync(''))
+  })
+
   if (process.env.VITE_DEV_SERVER_URL != null) {
     await win.loadURL(process.env.VITE_DEV_SERVER_URL)
+    win.webContents.toggleDevTools()
   } else {
     await win.loadFile(path.join(process.env.VITE_PUBLIC!, 'index.html'))
   }
 
-  win.maximize()
+  if (settings.getSync('app.maximized')) {
+    win.maximize()
+  }
+
+  socket?.on('settings:get', (key, callback) => {
+    callback(settings.getSync(key));
+  })
+
+  socket?.on('settings:set', (key, value, callback) => {
+    settings.setSync(key, value)
+    callback({success: true})
+  })
 }
 
 app.whenReady().then(bootstrap)

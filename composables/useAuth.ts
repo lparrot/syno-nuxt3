@@ -7,12 +7,19 @@ const user: Ref<ResponseAuthAccount | null> = ref<ResponseAuthAccount | null>(nu
 
 export default function () {
   const {fetchUser: fetchUserInStore, handleLogin} = useSynoStore()
+  const io = useSocketIo()
   const loginSuccess = createEventHook<{ user: Ref<ResponseAuthAccount | null>, result: any }>()
   const loginError = createEventHook<SynoError>()
 
   const fetchUser = async () => {
     try {
+
       user.value = await fetchUserInStore()
+      await io.connect()
+
+      io.on('window:resized', win => {
+        console.log(win)
+      })
     } catch (error) {
       user.value = null
     }
@@ -20,6 +27,7 @@ export default function () {
 
   const logout = async () => {
     await window.syno.setSettings('session.sid', null)
+    await io.disconnect()
     user.value = null
   }
 
