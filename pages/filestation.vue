@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import Tree, {TreeNode} from 'primevue/tree'
 import {ref} from "#imports";
+import {useSynoStore} from "~/stores/syno";
 
-const synoApi = useSynoApi()
+const {fetchFileStationFiles, fetchFileStationSharedFolders, handleFilestationDownload} = useSynoStore()
 
 const additional = '["real_path","owner","time","size","perm","volume_status"]'
 
@@ -20,19 +21,19 @@ const nodes = ref<TreeNode[]>();
 const loading = ref<boolean>(false);
 const files = ref<any[] | null>()
 
-const data_list = await synoApi.get('SYNO.FileStation.List', 'list_share', {
-  additional
-})
+const data_list = await fetchFileStationSharedFolders()
 
 nodes.value = data_list.shares.map((it: any) => createTreeNode(it))
 
 const onNodeExpand = async (node: TreeNode) => {
   loading.value = true
+
   try {
-    const data_list_children = await synoApi.get('SYNO.FileStation.List', 'list', {
-      folder_path: node.key,
+    const data_list_children = await fetchFileStationFiles({
+      folder_path: node.key!!,
       filetype: 'dir'
     })
+
     const allDirs = data_list_children.files.filter((it: any) => it.isdir)
 
     if (allDirs.length < 1) {
@@ -46,18 +47,14 @@ const onNodeExpand = async (node: TreeNode) => {
 };
 
 const onNodeSelect = async (node: TreeNode) => {
-  const data_list_node = await synoApi.get('SYNO.FileStation.List', 'list', {
-    folder_path: node.key,
-    additional
+  const data_list_node = await fetchFileStationFiles({
+    folder_path: node.key!!,
   })
   files.value = data_list_node.files
 }
 
 const onFilenameClick = async (item: any) => {
-  const blob = await synoApi.get('SYNO.FileStation.Download', 'download', {
-    path: item.path,
-    mode: 'download'
-  })
+  const blob = await handleFilestationDownload(item.path)
 
   downloadBlob(blob, item.isdir ? `${item.name}.zip` : item.name)
 }

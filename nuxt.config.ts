@@ -5,7 +5,7 @@ export default defineNuxtConfig(<NuxtConfig>{
   app: {
     head: {
       title: 'Syno Manager'
-    }
+    },
   },
   css: [
     'vue-json-pretty/lib/styles.css',
@@ -19,6 +19,8 @@ export default defineNuxtConfig(<NuxtConfig>{
     transpile: ['primevue']
   },
   modules: [
+    '@nuxt/devtools',
+    '@pinia/nuxt',
     'nuxt-electron',
   ],
 })

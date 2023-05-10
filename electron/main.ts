@@ -26,6 +26,7 @@ async function bootstrap() {
 
   win = new BrowserWindow({
     webPreferences: {
+      enablePreferredSizeMode: true,
       preload,
       nodeIntegrationInWorker: true,
       contextIsolation: true,
@@ -35,10 +36,9 @@ async function bootstrap() {
   })
 
   if (process.env.VITE_DEV_SERVER_URL != null) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL)
-    win.webContents.openDevTools()
+    await win.loadURL(process.env.VITE_DEV_SERVER_URL)
   } else {
-    win.loadFile(path.join(process.env.VITE_PUBLIC!, 'index.html'))
+    await win.loadFile(path.join(process.env.VITE_PUBLIC!, 'index.html'))
   }
 
   win.maximize()
@@ -47,7 +47,7 @@ async function bootstrap() {
 app.whenReady().then(bootstrap)
 
 lstat(cwd()).then(stats => {
-  console.log('[fs.lstat]', stats)
+  // console.log('[fs.lstat]', stats)
 }).catch(err => {
   console.error(err)
 })

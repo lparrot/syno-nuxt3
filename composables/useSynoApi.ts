@@ -1,5 +1,6 @@
+import {useSynoStore} from "~/stores/syno";
+
 const url = 'https://admin.nas-parrot.synology.me/webapi/entry.cgi'
-export let apiInfos: any = null
 
 export class SynoError extends Error {
   code: number;
@@ -11,20 +12,20 @@ export class SynoError extends Error {
 }
 
 export default function useSynoApi() {
-  const init = async () => {
-    apiInfos = await get('SYNO.API.Info', 'query')
-  }
 
   const get = async (api: string, method: string, params: any = {}, fetchOptions: { method: 'get' | 'post' } = {method: 'get'}): Promise<any> => {
-    const info = apiInfos?.[api]
-    const sid = await window.ipcRenderer.invoke('settings.get', 'session.sid')
+    const {apiInfo} = useSynoStore()
+
+    const info: ResponseApiInfo = apiInfo[api]
+
+    const sid = await window.syno.getSettings('session.sid')
 
     const version = info?.maxVersion || 1
 
     const formData = new FormData()
     formData.append('api', api)
     formData.append('method', method)
-    formData.append('version', version)
+    formData.append('version', String(version))
     formData.append('_sid', sid)
 
     Object.keys(params).forEach(it => {
@@ -50,7 +51,7 @@ export default function useSynoApi() {
         const formData = new FormData()
         formData.append('api', api)
         formData.append('method', method)
-        formData.append('version', version)
+        formData.append('version', String(version))
         formData.append('_sid', sid)
         Object.keys(params).forEach(it => {
           formData.append(it, params[it])
@@ -76,10 +77,8 @@ export default function useSynoApi() {
     }
   }
 
-  return <SynoApi>{
-    apiInfos,
+  return {
     get,
-    init,
   }
 }
 

@@ -2,8 +2,9 @@
 import {ref} from "vue";
 import {filesize} from "filesize";
 import {Pausable, useIntervalFn} from "@vueuse/core";
+import {useSynoStore} from "~/stores/syno";
 
-const {fetchProcesses} = useSynoHelpers()
+const {fetchProcesses} = useSynoStore()
 
 let intervalMonitor: Pausable
 const processes = ref<any[]>()
@@ -27,9 +28,9 @@ onBeforeRouteLeave(() => {
 
 <template>
   <DataTable :rows="15" :rows-per-page-options="[5,10,15,25,50,100]" :value="processes" class="p-datatable-sm" paginator paginator-position="both" scrollHeight="flex" scrollable>
-    <Column field="command" header="Nom du processus" sortable></Column>
-    <Column field="pid" header="ID du processus" sortable></Column>
-    <Column field="status" header="Statut" sortable>
+    <Column :sortable="true" field="command" header="Nom du processus"></Column>
+    <Column :sortable="true" field="pid" header="ID du processus"></Column>
+    <Column :sortable="true" field="status" header="Statut">
       <template #body="props">
         <div class="white-space-nowrap">
           <span v-if="props.data.status === 'R'">En cours d'exécution</span>
@@ -37,17 +38,17 @@ onBeforeRouteLeave(() => {
         </div>
       </template>
     </Column>
-    <Column field="cpu" header="Processeur(%)" sortable>
+    <Column :sortable="true" field="cpu" header="Processeur(%)">
       <template #body="props">
         <span>{{ props.data.cpu / 10 }}</span>
       </template>
     </Column>
-    <Column field="mem" header="Mémoire privée" sortable>
+    <Column :sortable="true" field="mem" header="Mémoire privée">
       <template #body="props">
         <span>{{ filesize((props.data.mem - props.data.mem_shared) * 1000) }}</span>
       </template>
     </Column>
-    <Column field="mem_shared" header="Mémoire partagée" sortable>
+    <Column :sortable="true" field="mem_shared" header="Mémoire partagée">
       <template #body="props">
         <span>{{ filesize(props.data.mem_shared * 1000) }}</span>
       </template>

@@ -12,6 +12,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxt/devtools": "^0.4.6",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18",
     "electron": "^24.1.3",
@@ -22,6 +23,7 @@
     "vite-plugin-electron-renderer": "^0.14.1"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.4.10",
     "@vueuse/core": "^10.1.2",
     "@vueuse/electron": "^10.1.2",
     "chart.js": "^4.3.0",
@@ -29,6 +31,7 @@
     "electron-settings": "^4.0.2",
     "filesize": "^10.0.7",
     "lodash": "^4.17.21",
+    "pinia": "^2.0.36",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.28.0",

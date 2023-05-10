@@ -1,39 +1,36 @@
 import {createEventHook} from "@vueuse/core";
 import {SynoError} from "~/composables/useSynoApi";
 import {Ref} from "vue";
+import {useSynoStore} from "~/stores/syno";
 
-const user: Ref<ResponseAccount | null> = ref<ResponseAccount | null>(null)
+const user: Ref<ResponseAuthAccount | null> = ref<ResponseAuthAccount | null>(null)
 
 export default function () {
-  const synoApi = useSynoApi()
-  const loginSuccess = createEventHook<{ user: Ref<ResponseAccount | null>, result: any }>()
+  const {fetchUser: fetchUserInStore, handleLogin} = useSynoStore()
+  const loginSuccess = createEventHook<{ user: Ref<ResponseAuthAccount | null>, result: any }>()
   const loginError = createEventHook<SynoError>()
 
   const fetchUser = async () => {
     try {
-      user.value = await synoApi.get('SYNO.Core.NormalUser', 'get', {version: 1})
+      user.value = await fetchUserInStore()
     } catch (error) {
       user.value = null
     }
   }
 
   const logout = async () => {
-    await window.ipcRenderer.invoke('settings.set', 'session.sid', null)
+    await window.syno.setSettings('session.sid', null)
     user.value = null
   }
 
   const login = async (username: string, password: string, persistCredentials = false) => {
     try {
-      const data = await synoApi.get('SYNO.API.Auth', 'login', {
-        account: username,
-        passwd: password,
-        format: 'sid'
-      })
+      const data = await handleLogin(username, password)
 
-      await window.ipcRenderer.invoke('settings.set', 'session.sid', data.sid)
+      await window.syno.setSettings('session.sid', data.sid)
       if (persistCredentials) {
-        await window.ipcRenderer.invoke('settings.set', 'session.username', username)
-        await window.ipcRenderer.invoke('settings.set', 'session.password', password)
+        await window.syno.setSettings('session.username', username)
+        await window.syno.setSettings('session.password', password)
       }
 
       await fetchUser()

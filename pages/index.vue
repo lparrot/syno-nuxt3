@@ -1,19 +1,20 @@
 <script lang="ts" setup>
 import VueJsonPretty from 'vue-json-pretty'
-import {apiInfos} from "~/composables/useSynoApi";
+import {storeToRefs} from "pinia";
+import {useSynoStore} from "~/stores/syno";
 
+const synoStore = useSynoStore()
 const query = ref<string>()
-const infos = ref()
 
-infos.value = apiInfos
+const {apiInfo} = storeToRefs(synoStore)
 
 const items = computed(() => {
-  if (infos.value == null) {
+  if (apiInfo.value == null) {
     return []
   }
-  return Object.keys(infos.value).filter(it => query.value == null || query.value === '' ? true : it.toLowerCase().indexOf(query.value.toLowerCase()) > -1).map(it => ({
+  return Object.keys(apiInfo.value).filter((it: string) => query.value == null || query.value === '' ? true : it.toLowerCase().indexOf(query.value.toLowerCase()) > -1).map((it: string) => ({
     key: it,
-    data: infos.value[it]
+    data: apiInfo.value?.[it]
   }))
 })
 </script>

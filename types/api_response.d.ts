@@ -1,4 +1,20 @@
-interface ResponseAccount {
+interface ResponseApiInfo {
+  maxVersion: number;
+  minVersion: number;
+  path: string;
+  requestFormat?: string;
+}
+
+interface ResponseAuthLogin {
+  account: string;
+  device_id: string;
+  ik_message: string;
+  is_portal_port: boolean;
+  sid: string;
+  synotoken: string;
+}
+
+interface ResponseAuthAccount {
   OTP_enable: boolean;
   OTP_enforced: boolean;
   disallowchpasswd: boolean;
@@ -81,4 +97,75 @@ interface ResponseMonitoring {
     }];
   };
   time: number;
+}
+
+interface ResponseMonitoringProcess {
+  command: string;
+  cpu: number;
+  mem: number;
+  mem_shared: number;
+  pid: number;
+  status: string;
+}
+
+interface ResponseFileManagerSharedFolder {
+  offset: number;
+  shares: [{
+    additional: ResponseFileManagerAdditional
+    isdir: boolean;
+    name: string;
+    path: string;
+  }];
+  total: number;
+}
+
+interface ResponseFileManagerFile {
+  offset: number;
+  files: [{
+    additional: ResponseFileManagerAdditional
+    isdir: boolean;
+    name: string;
+    path: string;
+  }];
+  total: number;
+}
+
+interface ResponseFileManagerAdditional {
+  owner: {
+    gid: number;
+    group: string;
+    uid: number;
+    user: string;
+  };
+  perm: {
+    acl: {
+      append: boolean;
+      del: boolean;
+      exec: boolean;
+      read: boolean;
+      write: boolean;
+    };
+    acl_enable: boolean;
+    adv_right: {
+      disable_download: boolean;
+      disable_list: boolean;
+      disable_modify: boolean;
+    };
+    is_acl_mode: boolean;
+    is_share_readonly: boolean;
+    posix: number;
+    share_right: string;
+  };
+  real_path: string;
+  time: {
+    atime: number;
+    crtime: number;
+    ctime: number;
+    mtime: number;
+  };
+  volume_status: {
+    freespace: number;
+    readonly: boolean;
+    totalspace: number;
+  };
 }

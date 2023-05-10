@@ -1,13 +1,13 @@
 import {SynoError} from "#imports";
-import {useToast} from "primevue/usetoast";
 import {getErrorMessage} from "~/composables/useSynoApi";
+import {useSynoStore} from "~/stores/syno";
 
 export default defineNuxtPlugin(async nuxt => {
   const {$toast} = useNuxtApp()
-  const {init} = useSynoApi()
-  const {fetchUser} = useAuth()
+  const {fetchApiInfo} = useSynoStore()
+  const {fetchUser, user} = useAuth()
 
-  await init()
+  await fetchApiInfo()
   await fetchUser()
 
   nuxt.vueApp.config.errorHandler = (err, instance, info) => {

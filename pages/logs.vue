@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-const synoApi = useSynoApi()
-const log_result: any = await synoApi.get('SYNO.Core.SyslogClient.Log', 'list', {
+import {useSynoStore} from "~/stores/syno";
+
+const {fetchLogs} = useSynoStore()
+const log_result: any = await fetchLogs({
   start: 0,
   limit: 99999999,
   target: 'LOCAL',

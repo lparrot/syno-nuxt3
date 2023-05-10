@@ -3,8 +3,9 @@ import {filesize} from "filesize";
 import {ref} from "#imports";
 import {ChartOptions} from "chart.js";
 import {Pausable, useIntervalFn} from "@vueuse/core";
+import {useSynoStore} from "~/stores/syno";
 
-const {fetchMonitoring} = useSynoHelpers()
+const {fetchMonitoring} = useSynoStore()
 
 const data = ref({
   cpu: []
@@ -58,16 +59,16 @@ onBeforeRouteLeave(() => {
 
 <template>
   <div class="grid w-full">
-    <div class="col-12 md:col-6 xl:col-4">
+    <div class="col-12 lg:col-6">
       <AppMonitoringContainer ref="chart_cpu" :labels="['Processeur ({0}%)']" :y-max="100" title="Processeur"/>
     </div>
-    <div class="col-12 md:col-6 xl:col-4">
+    <div class="col-12 lg:col-6">
       <AppMonitoringContainer ref="chart_memory" :colors="['#f19922']" :labels="['Mémoire ({0}%)']" :y-max="100" title="Mémoire"/>
     </div>
-    <div class="col-12 md:col-6 xl:col-4">
+    <div class="col-12 lg:col-6">
       <AppMonitoringContainer ref="chart_network" :colors="['#0817b4', '#39ade5']" :labels="[(data) => `RX (${filesize(data)}/s)`, (data) => `TX (${filesize(data)}/s)`]" :options="chartFilesizeOptions" title="Réseau"/>
     </div>
-    <div class="col-12 md:col-6 xl:col-4">
+    <div class="col-12 lg:col-6">
       <AppMonitoringContainer ref="chart_volume" :colors="['#d97490', '#e4a040']" :labels="[(data) => `R: (${filesize(data)}/s)`, (data) => `W: (${filesize(data)}/s)`]" :options="chartFilesizeOptions" title="Volume"/>
     </div>
   </div>
