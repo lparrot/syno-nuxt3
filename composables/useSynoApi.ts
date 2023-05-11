@@ -1,4 +1,6 @@
 import {useSynoStore} from "~/stores/syno";
+import {NitroFetchOptions} from "nitropack";
+import {get as lodashGet} from 'lodash'
 
 const url = 'https://admin.nas-parrot.synology.me/webapi/entry.cgi'
 
@@ -12,11 +14,15 @@ export class SynoError extends Error {
 }
 
 export default function useSynoApi() {
+  const getI18n = (key: string) => {
+    key = key.replaceAll(':', '.')
+    return lodashGet(window.SYNO_WebManager_Strings, key)
+  }
 
-  const get = async (api: string, method: string, params: any = {}, fetchOptions: { method: 'get' | 'post' } = {method: 'get'}): Promise<any> => {
+  const get = async (api: string, method: string, params?: any, fetchOptions?: NitroFetchOptions<any>): Promise<any> => {
     const {apiInfo} = useSynoStore()
 
-    const info: ResponseApiInfo = apiInfo[api]
+    const info: ResponseApiInfo = apiInfo!![api]
 
     const sid = await window.syno.getSettings('session.sid')
 
@@ -28,16 +34,24 @@ export default function useSynoApi() {
     formData.append('version', String(version))
     formData.append('_sid', sid)
 
+    if (params == null) {
+      params = {}
+    }
+
     Object.keys(params).forEach(it => {
       formData.append(it, params[it])
     })
 
     let res = null
 
+    if (fetchOptions == null || fetchOptions.method == null) {
+      fetchOptions = Object.assign({}, fetchOptions, {method: 'get'})
+    }
+
     switch (fetchOptions.method) {
       case 'get':
         res = await $fetch<any>(url, {
-          method: 'get',
+          ...fetchOptions,
           params: {
             api: api,
             method: method,
@@ -57,7 +71,7 @@ export default function useSynoApi() {
           formData.append(it, params[it])
         })
         res = await $fetch<any>(url, {
-          method: 'post',
+          ...fetchOptions,
           responseType: 'json',
           body: formData
         })
@@ -79,6 +93,7 @@ export default function useSynoApi() {
 
   return {
     get,
+    getI18n
   }
 }
 

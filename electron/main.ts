@@ -74,9 +74,6 @@ async function bootstrap() {
     const [width, height] = win.getSize();
     settings.setSync('app.height', height)
     settings.setSync('app.width', width)
-    socket?.emit('window:resized', win.getSize())
-
-    console.log(settings.getSync(''))
   })
 
   if (process.env.VITE_DEV_SERVER_URL != null) {

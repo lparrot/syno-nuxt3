@@ -4,7 +4,7 @@ import {useSynoStore} from "~/stores/syno";
 
 export default defineNuxtPlugin(async nuxt => {
   const {$toast} = useNuxtApp()
-  const {fetchApiInfo} = useSynoStore()
+  const {fetchApiInfo, getJavascriptUiString} = useSynoStore()
   const {fetchUser, user} = useAuth()
 
   await fetchApiInfo()
@@ -15,4 +15,13 @@ export default defineNuxtPlugin(async nuxt => {
       $toast.add({severity: 'error', detail: getErrorMessage(err.code), life: 5000})
     }
   }
+
+  // Récupération du javascript I18n côté
+  const js = await getJavascriptUiString()
+
+  useHead({
+    script: [
+      {innerHTML: js}
+    ]
+  })
 })

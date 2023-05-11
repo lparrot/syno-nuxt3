@@ -13,13 +13,8 @@ export default function () {
 
   const fetchUser = async () => {
     try {
-
       user.value = await fetchUserInStore()
       await io.connect()
-
-      io.on('window:resized', win => {
-        console.log(win)
-      })
     } catch (error) {
       user.value = null
     }

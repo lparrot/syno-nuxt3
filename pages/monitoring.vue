@@ -4,7 +4,8 @@ import {MenuItem} from "primevue/menuitem";
 
 const items = ref<MenuItem[]>([
   {label: 'Performances', icon: 'pi pi-fw pi-server', to: '/monitoring'},
-  {label: 'Processus', icon: 'pi pi-fw pi-sitemap', to: '/monitoring/processes'}
+  {label: 'Processus', icon: 'pi pi-fw pi-sitemap', to: '/monitoring/processes'},
+  {label: 'Services', icon: 'pi pi-fw pi-wrench', to: '/monitoring/services'},
 ]);
 </script>
 

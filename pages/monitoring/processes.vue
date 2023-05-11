@@ -4,13 +4,13 @@ import {filesize} from "filesize";
 import {Pausable, useIntervalFn} from "@vueuse/core";
 import {useSynoStore} from "~/stores/syno";
 
-const {fetchProcesses} = useSynoStore()
+const {fetchMonitoringProcesses} = useSynoStore()
 
 let intervalMonitor: Pausable
 const processes = ref<any[]>()
 
 const getProcesses = async () => {
-  processes.value = await fetchProcesses()
+  processes.value = await fetchMonitoringProcesses()
 }
 
 onMounted(async () => {

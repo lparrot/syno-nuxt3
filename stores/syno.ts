@@ -40,13 +40,36 @@ export const useSynoStore = defineStore('syno-store', {
       return synoApi.get('SYNO.Core.System.Utilization', 'get')
     },
 
-    async fetchProcesses(): Promise<ResponseMonitoringProcess> {
+    async fetchMonitoringProcesses(): Promise<ResponseMonitoringProcess[]> {
       const {process} = await synoApi.get('SYNO.Core.System.Process', 'list')
       return process
     },
 
+    async fetchMonitoringServices(): Promise<ResponseMonitoringService[]> {
+      const {slices} = await synoApi.get('SYNO.Core.System.ProcessGroup', 'list')
+      return slices
+    },
+
+    async fetchPackages(): Promise<ResponseFetchPackages> {
+      const {packages} = await synoApi.get('SYNO.Core.Package', 'list', {
+        additional: '["status_sketch","dsm_apps"]'
+      })
+      return packages
+    },
+
     async fetchUser(): Promise<ResponseAuthAccount> {
       return synoApi.get('SYNO.Core.NormalUser', 'get', {version: 1})
+    },
+
+    async getJavascriptUiString(): Promise<string> {
+      const blob = await synoApi.get('SYNO.Core.Desktop.UIString', 'getjs', {lang: 'fre'}, {
+        responseType: 'blob',
+        headers: {
+          'Content-Type': 'application/javascript'
+        }
+      })
+
+      return blob.text()
     },
 
     async handleLogin(username: string, password: string): Promise<ResponseAuthLogin> {

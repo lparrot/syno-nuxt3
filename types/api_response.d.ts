@@ -108,6 +108,31 @@ interface ResponseMonitoringProcess {
   status: string;
 }
 
+interface ResponseMonitoringService {
+  byte_read_per_sec: number;
+  byte_write_per_sec: number;
+  cpu_time: number;
+  cpu_utilization: number;
+  icon: {
+    app_id: string;
+    cls: string;
+    name: string;
+  }
+  memory: number;
+  name: string;
+  name_i18n: string;
+  process: [{
+    byte_read_per_sec: number;
+    byte_write_per_sec: number;
+    cpu_time: number;
+    cpu_utilization: number;
+    memory: number;
+    name: string;
+    pid: number;
+  }];
+  unit_name: string;
+}
+
 interface ResponseFileManagerSharedFolder {
   offset: number;
   shares: [{
@@ -168,4 +193,15 @@ interface ResponseFileManagerAdditional {
     readonly: boolean;
     totalspace: number;
   };
+}
+
+interface ResponseFetchPackages {
+  additional: {
+    dsm_apps: string;
+    status: string;
+  }
+  id: string;
+  name: string;
+  timestamp: number;
+  version: string;
 }
