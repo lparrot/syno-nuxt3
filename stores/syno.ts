@@ -59,6 +59,17 @@ export const useSynoStore = defineStore('syno-store', {
       return packages
     },
 
+    async fetchPhotoItems(): Promise<ResponsePhotoItem[]> {
+      const {list} = await synoApi.get('SYNO.FotoTeam.Browse.Item', 'list', {
+        offset: 0,
+        limit: 100,
+        additional: '["thumbnail","resolution","orientation","video_convert","video_meta","address"]',
+        timeline_group_unit: "day"
+      })
+
+      return list
+    },
+
     async fetchIcons() {
       const {JSConfig} = await synoApi.get('SYNO.Core.Desktop.Initdata', 'get_ui_config', {lang: 'fre'})
       const icons: { [propKey: string]: string } = {}

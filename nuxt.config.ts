@@ -11,7 +11,6 @@ export default defineNuxtConfig(<NuxtConfig>{
     'vue-json-pretty/lib/styles.css',
     'primevue/resources/themes/lara-light-indigo/theme.css',
     'primevue/resources/primevue.min.css',
-    'primeflex/primeflex.css',
     'primeicons/primeicons.css',
     '@/assets/app.scss'
   ],

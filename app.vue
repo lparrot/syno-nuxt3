@@ -50,6 +50,7 @@ const app_menubar_items = ref<MenuItem[]>([
   {label: 'FileStation', icon: 'pi pi-file', to: '/filestation', visible: () => user.value != null},
   {label: 'Logs', icon: 'pi pi-list', to: '/logs', visible: () => user.value != null},
   {label: 'Monitoring', icon: 'pi pi-desktop', to: '/monitoring', visible: () => user.value != null},
+  {label: 'Photos', icon: 'pi pi-camera', to: '/photos', visible: () => user.value != null},
 ])
 
 const handleLogin = async () => {

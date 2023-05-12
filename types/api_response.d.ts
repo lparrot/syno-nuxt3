@@ -205,3 +205,30 @@ interface ResponseFetchPackages {
   timestamp: number;
   version: string;
 }
+
+interface ResponsePhotoItem {
+  id: number;
+  filename: string;
+  filesize: number;
+  time: number;
+  indexed_time: number;
+  owner_user_id: number;
+  folder_id: number;
+  type: string;
+  additional: {
+    resolution: {
+      width: number;
+      height: number;
+    };
+    orientation: number;
+    orientation_original: number;
+    thumbnail: {
+      m: string;
+      xl: string;
+      preview: string;
+      sm: string;
+      cache_key: string;
+      unit_id: number;
+    };
+  };
+}

@@ -23,7 +23,7 @@ const getIcon = (service: ResponseMonitoringService) => {
     return ''
   }
 
-  return `${synoUrl}/https://admin.nas-parrot.synology.me/webapi/entry.cgi?api=SYNO.Core.Synohdpack&version=1&method=getHDIcon&res=32&retina=false&path=${icon}`
+  return `${synoUrl}/https://admin.nas-parrot.synology.me/webapi/entry.cgi?api=SYNO.Core.Synohdpack&version=1&method=getHDIcon&res=72&retina=false&path=${icon}`
 }
 
 const convertCpuTime = (cpu_time: number | string) => {
