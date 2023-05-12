@@ -5,11 +5,26 @@ import {ref} from "#imports";
 import {isNotBlank} from "~/utils/string";
 import {filesize} from "filesize";
 import {padStart} from 'lodash'
+import {synoUrl} from "~/composables/useSynoApi";
 
 const {getI18n} = useSynoApi()
-const {fetchMonitoringServices} = useSynoStore()
+const {fetchMonitoringServices, icons} = useSynoStore()
 
 const services = await fetchMonitoringServices()
+
+const getIcon = (service: ResponseMonitoringService) => {
+  if (isBlank(service.icon.app_id)) {
+    return ''
+  }
+
+  const icon = icons[service.icon.app_id]
+
+  if (icon == null) {
+    return ''
+  }
+
+  return `${synoUrl}/https://admin.nas-parrot.synology.me/webapi/entry.cgi?api=SYNO.Core.Synohdpack&version=1&method=getHDIcon&res=32&retina=false&path=${icon}`
+}
 
 const convertCpuTime = (cpu_time: number | string) => {
   if (typeof cpu_time === 'string') {
@@ -44,8 +59,9 @@ const nodes = ref<TreeNode[]>(services.map(service => ({
 
 <template>
   <TreeTable :value="nodes" auto-layout class="p-treetable-sm">
-    <Column :sortable="true" body-class="white-space-nowrap" expander field="name" header="Nom de service">
+    <Column :sortable="true" body-class="flex align-items-center gap-2 white-space-nowrap" expander field="name" header="Nom de service">
       <template #body="props">
+        <Image :src="getIcon(props.node.data)" alt="icon_app" width="18"></Image>
         <span>{{ isNotBlank(props.node.data.name) ? props.node.data.name : getI18n(props.node.data.name_i18n) }}</span>
       </template>
     </Column>

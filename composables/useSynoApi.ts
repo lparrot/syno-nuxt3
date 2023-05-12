@@ -2,7 +2,7 @@ import {useSynoStore} from "~/stores/syno";
 import {NitroFetchOptions} from "nitropack";
 import {get as lodashGet} from 'lodash'
 
-const url = 'https://admin.nas-parrot.synology.me/webapi/entry.cgi'
+export const synoUrl = 'https://admin.nas-parrot.synology.me/webapi/entry.cgi'
 
 export class SynoError extends Error {
   code: number;
@@ -50,7 +50,7 @@ export default function useSynoApi() {
 
     switch (fetchOptions.method) {
       case 'get':
-        res = await $fetch<any>(url, {
+        res = await $fetch<any>(synoUrl, {
           ...fetchOptions,
           params: {
             api: api,
@@ -70,7 +70,7 @@ export default function useSynoApi() {
         Object.keys(params).forEach(it => {
           formData.append(it, params[it])
         })
-        res = await $fetch<any>(url, {
+        res = await $fetch<any>(synoUrl, {
           ...fetchOptions,
           responseType: 'json',
           body: formData

@@ -2,12 +2,14 @@ import {defineStore} from "pinia";
 
 export type SynoStoreState = {
   apiInfo: { [propKey: string]: ResponseApiInfo } | null
+  icons: { [propKey: string]: string }
 }
 const synoApi = useSynoApi()
 
 export const useSynoStore = defineStore('syno-store', {
   state: (): SynoStoreState => ({
-    apiInfo: {}
+    apiInfo: {},
+    icons: {}
   }),
 
   actions: {
@@ -55,6 +57,21 @@ export const useSynoStore = defineStore('syno-store', {
         additional: '["status_sketch","dsm_apps"]'
       })
       return packages
+    },
+
+    async fetchIcons() {
+      const {JSConfig} = await synoApi.get('SYNO.Core.Desktop.Initdata', 'get_ui_config', {lang: 'fre'})
+      const icons: { [propKey: string]: string } = {}
+      Object.values(JSConfig)
+        .flatMap((it: any) => {
+          return Object.keys(it).map(key => ({key: key, value: it[key]}))
+        })
+        .filter((it: any) => it.value.icon != null)
+        .forEach((it: any) => {
+          icons[it.key] = `${it.value.jsBaseURL}/${it.value.icon}`
+        })
+
+      this.icons = icons
     },
 
     async fetchUser(): Promise<ResponseAuthAccount> {

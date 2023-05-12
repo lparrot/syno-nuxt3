@@ -4,7 +4,7 @@ import {useSynoStore} from "~/stores/syno";
 
 export default defineNuxtPlugin(async nuxt => {
   const {$toast} = useNuxtApp()
-  const {fetchApiInfo, getJavascriptUiString} = useSynoStore()
+  const {fetchApiInfo, getJavascriptUiString, fetchIcons} = useSynoStore()
   const {fetchUser, user} = useAuth()
 
   await fetchApiInfo()
@@ -24,4 +24,6 @@ export default defineNuxtPlugin(async nuxt => {
       {innerHTML: js}
     ]
   })
+
+  await fetchIcons()
 })
