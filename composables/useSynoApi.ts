@@ -24,7 +24,7 @@ export default function useSynoApi() {
 
     const info: ResponseApiInfo = apiInfo!![api]
 
-    const sid = await window.syno.getSettings('session.sid')
+    const sid = await window.app.getSettings('session.sid')
 
     const version = info?.maxVersion || 1
 

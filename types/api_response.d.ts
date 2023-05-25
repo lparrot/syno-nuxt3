@@ -232,3 +232,50 @@ interface ResponsePhotoItem {
     };
   };
 }
+
+interface ResponsePhotoDetail {
+  id: number;
+  filename: string;
+  filesize: number;
+  time: number;
+  indexed_time: number;
+  owner_user_id: number;
+  folder_id: number;
+  type: string;
+  additional: PhotoDetailAdditional;
+}
+
+interface PhotoDetailAdditional {
+  description: string;
+  tag: any[];
+  person: any[];
+  exif: PhotoDetailExif;
+  resolution: PhotoDetailResolution;
+  orientation: number;
+  orientation_original: number;
+  thumbnail: PhotoDetailThumbnail;
+  rating: number;
+}
+
+interface PhotoDetailThumbnail {
+  m: string;
+  xl: string;
+  preview: string;
+  sm: string;
+  cache_key: string;
+  unit_id: number;
+}
+
+interface PhotoDetailResolution {
+  width: number;
+  height: number;
+}
+
+interface ResponsePhotoDetailExif {
+  aperture: string;
+  camera: string;
+  exposure_time: string;
+  focal_length: string;
+  iso: string;
+  lens: string;
+}

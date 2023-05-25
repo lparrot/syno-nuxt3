@@ -3,6 +3,7 @@
  */
 {
   "appId": "syno.nuxt3",
+  "productName": "Syno Manager",
   "asar": false,
   "directories": {
     "output": ".release/${version}"
@@ -12,7 +13,7 @@
     "dist-electron"
   ],
   "mac": {
-    "artifactName": "${productName}_${version}.${ext}",
+    "artifactName": "${productName}.${ext}",
     "target": [
       "dmg"
     ]
@@ -26,12 +27,23 @@
         ]
       }
     ],
-    "artifactName": "${productName}_${version}.${ext}"
+    "artifactName": "${productName}.${ext}"
   },
   "nsis": {
-    "oneClick": false,
+    "installerIcon": "icon.ico",
+    "uninstallerIcon": "icon.ico",
+    "oneClick": true,
     "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
+    "allowToChangeInstallationDirectory": false,
     "deleteAppDataOnUninstall": false
-  }
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "lparrot",
+    "repo": "syno-nuxt3",
+    "releaseType": "release"
+  },
+  extraResources: [
+    'electron-extras/**/*'
+  ]
 }

@@ -11,6 +11,8 @@ const {settings} = await useElectronConfig()
 const {user, onLoginSuccess, onLoginError, logout, login} = useAuth()
 const overlay_profile: Ref<OverlayPanel> = ref<any>()
 
+await window.app.frontReady()
+
 onLoginSuccess(async ({user}) => {
   await overlay_profile.value.hide()
   toast.add({severity: 'success', detail: `Connecté sous ${user.value?.username}`, life: 5000})

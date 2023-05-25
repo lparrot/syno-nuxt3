@@ -14,15 +14,13 @@ export default function () {
   const fetchUser = async () => {
     try {
       user.value = await fetchUserInStore()
-      await io.connect()
     } catch (error) {
       user.value = null
     }
   }
 
   const logout = async () => {
-    await window.syno.setSettings('session.sid', null)
-    await io.disconnect()
+    await window.app.setSettings('session.sid', null)
     user.value = null
   }
 
@@ -30,10 +28,10 @@ export default function () {
     try {
       const data = await handleLogin(username, password)
 
-      await window.syno.setSettings('session.sid', data.sid)
+      await window.app.setSettings('session.sid', data.sid)
       if (persistCredentials) {
-        await window.syno.setSettings('session.username', username)
-        await window.syno.setSettings('session.password', password)
+        await window.app.setSettings('session.username', username)
+        await window.app.setSettings('session.password', password)
       }
 
       await fetchUser()

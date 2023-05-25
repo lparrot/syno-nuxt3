@@ -1,24 +1,25 @@
-import {app, BrowserWindow, ipcMain} from 'electron'
-import {lstat} from 'node:fs/promises'
-import {cwd} from 'node:process'
+import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron'
 import path from "path";
 import settings from 'electron-settings';
 import {Server, Socket} from 'socket.io'
+import {configureSettings} from "./services/settings";
+import {autoUpdater} from "electron-updater";
+import {configureIpcMain} from "./ipcmain-hooks";
 
+let tray: Tray
+export let win: BrowserWindow
 export const SOCKET_IO_PORT = 8000
 export let io: Server | null = null
 export let socket: Socket | null = null
 
 process.env.ROOT = path.join(__dirname, '..')
 process.env.DIST = path.join(process.env.ROOT, 'dist-electron')
-process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? path.join(process.env.ROOT, 'public')
-  : path.join(process.env.ROOT, '.output/public')
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+process.env.VITE_PUBLIC = path.join(process.env.ROOT, process.env.VITE_DEV_SERVER_URL ? 'public' : '.output/public')
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
-let win: BrowserWindow
+const iconPath = app.isPackaged ? path.join(process.resourcesPath, 'electron-extras', 'icon.png') : path.join('electron-extras', 'icon.png')
 
-const preload = path.join(process.env.DIST, 'preload.js')
+configureIpcMain()
 
 async function bootstrap() {
   io = new Server(SOCKET_IO_PORT, {})
@@ -48,7 +49,8 @@ async function bootstrap() {
     x: settings.getSync('app.position.x') as any,
     y: settings.getSync('app.position.y') as any,
     webPreferences: {
-      preload,
+      devTools: !app.isPackaged,
+      preload: path.join(process.env.DIST!, 'preload.js'),
       nodeIntegrationInWorker: true,
       contextIsolation: true,
       nodeIntegration: true,
@@ -56,59 +58,38 @@ async function bootstrap() {
     },
   })
 
-  win.on('moved', () => {
-    const [x, y] = win.getPosition()
-    settings.setSync('app.position.x', x)
-    settings.setSync('app.position.y', y)
-  })
+  win.setIcon(nativeImage.createFromPath(iconPath))
 
-  win.on('maximize', () => {
-    settings.setSync('app.maximized', true)
-  })
+  configureSettings()
 
-  win.on('unmaximize', () => {
-    settings.setSync('app.maximized', false)
-  })
-
-  win.on('resized', () => {
-    const [width, height] = win.getSize();
-    settings.setSync('app.height', height)
-    settings.setSync('app.width', width)
-  })
-
-  if (process.env.VITE_DEV_SERVER_URL != null) {
-    await win.loadURL(process.env.VITE_DEV_SERVER_URL)
-    win.webContents.toggleDevTools()
-  } else {
+  if (app.isPackaged) {
     await win.loadFile(path.join(process.env.VITE_PUBLIC!, 'index.html'))
+  } else {
+    await win.loadURL(process.env.VITE_DEV_SERVER_URL!)
+    win.webContents.toggleDevTools()
   }
 
-  if (settings.getSync('app.maximized')) {
-    win.maximize()
+  if (app.isPackaged) {
+    win.removeMenu()
   }
 
-  socket?.on('settings:get', (key, callback) => {
-    callback(settings.getSync(key));
-  })
-
-  socket?.on('settings:set', (key, value, callback) => {
-    settings.setSync(key, value)
-    callback({success: true})
-  })
+  createTray()
 }
 
 app.whenReady().then(bootstrap)
 
-lstat(cwd()).then(stats => {
-  // console.log('[fs.lstat]', stats)
-}).catch(err => {
-  console.error(err)
+process.on('uncaughtException', (error) => {
+  console.error(error)
 })
 
-ipcMain.handle('settings.get', async (event, key) => {
-  return settings.getSync(key);
-});
+const createTray = () => {
+  tray = new Tray(nativeImage.createFromPath(iconPath))
 
-ipcMain.handle('settings.set', async (event, key, payload) => {
-  return settings.setSync(key, payload);
-});
+  const contextMenu = Menu.buildFromTemplate([
+    {label: 'Vérifier les mises à jour', type: 'normal', click: async () => await autoUpdater.checkForUpdates()},
+    {label: `Quitter l'application`, type: 'normal', click: () => app.quit()}
+  ])
+
+  tray.setContextMenu(contextMenu)
+  tray.setToolTip('Instant-Gaming Webscraper')
+}

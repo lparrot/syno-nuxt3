@@ -18,6 +18,10 @@ export const useSynoStore = defineStore('syno-store', {
       return this.apiInfo
     },
 
+    async fetchFanSpeedInfo() {
+      return synoApi.get('SYNO.Core.Hardware.FanSpeed', 'get')
+    },
+
     async fetchFileStationSharedFolders(params?: RequestFileStationSharedFolders): Promise<ResponseFileManagerSharedFolder> {
       return synoApi.get('SYNO.FileStation.List', 'list_share', {
         additional: '["real_path","owner","time","size","perm","volume_status"]',
@@ -30,6 +34,21 @@ export const useSynoStore = defineStore('syno-store', {
         additional: '["real_path","owner","time","size","perm","volume_status"]',
         ...params
       })
+    },
+
+    async fetchIcons() {
+      const {JSConfig} = await synoApi.get('SYNO.Core.Desktop.Initdata', 'get_ui_config', {lang: 'fre'})
+      const icons: { [propKey: string]: string } = {}
+      Object.values(JSConfig)
+        .flatMap((it: any) => {
+          return Object.keys(it).map(key => ({key: key, value: it[key]}))
+        })
+        .filter((it: any) => it.value.icon != null)
+        .forEach((it: any) => {
+          icons[it.key] = `${it.value.jsBaseURL}/${it.value.icon}`
+        })
+
+      this.icons = icons
     },
 
     async fetchLogs(params?: RequestLogs) {
@@ -70,19 +89,17 @@ export const useSynoStore = defineStore('syno-store', {
       return list
     },
 
-    async fetchIcons() {
-      const {JSConfig} = await synoApi.get('SYNO.Core.Desktop.Initdata', 'get_ui_config', {lang: 'fre'})
-      const icons: { [propKey: string]: string } = {}
-      Object.values(JSConfig)
-        .flatMap((it: any) => {
-          return Object.keys(it).map(key => ({key: key, value: it[key]}))
-        })
-        .filter((it: any) => it.value.icon != null)
-        .forEach((it: any) => {
-          icons[it.key] = `${it.value.jsBaseURL}/${it.value.icon}`
-        })
+    async fetchPhotoDetail(ids: number[]): Promise<ResponsePhotoDetail[]> {
+      const {list} = await synoApi.get('SYNO.FotoTeam.Browse.Item', 'get', {id: JSON.stringify(ids), additional: '["description","tag","exif","resolution","orientation","gps","video_meta","video_convert","thumbnail","address","geocoding_id","rating","person"]'})
+      return list
+    },
 
-      this.icons = icons
+    async fetchQuickConnectInfo() {
+      return synoApi.get('SYNO.Core.QuickConnect', 'get', {version: 2})
+    },
+
+    async fetchSystemInfo() {
+      return synoApi.get('SYNO.Core.System', 'info')
     },
 
     async fetchUser(): Promise<ResponseAuthAccount> {
