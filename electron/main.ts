@@ -91,5 +91,5 @@ const createTray = () => {
   ])
 
   tray.setContextMenu(contextMenu)
-  tray.setToolTip('Instant-Gaming Webscraper')
+  tray.setToolTip('Syno Manager')
 }

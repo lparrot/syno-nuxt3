@@ -7,7 +7,7 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <template v-for="item in items">
+  <template v-for="item in props.items">
     <div class="text-xl text-gray-400">{{ item.label }}</div>
     <div class="grid">
       <template v-for="child in item.children">
@@ -15,10 +15,8 @@ const props = withDefaults(defineProps<{
           <span>{{ child.label }}</span>
         </div>
         <div class="col-12 sm:col-6">
-          <template v-for="child in item.children">
-            <slot v-if="child.slot != null" :name="child.slot"></slot>
-            <div v-else-if="child.value != null">{{ child.value }}</div>
-          </template>
+          <slot v-if="child.slot != null" :name="child.slot"></slot>
+          <div v-else-if="child.value != null">{{ child.value }}</div>
         </div>
       </template>
     </div>

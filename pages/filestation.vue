@@ -5,8 +5,6 @@ import {useSynoStore} from "~/stores/syno";
 
 const {fetchFileStationFiles, fetchFileStationSharedFolders, handleFilestationDownload} = useSynoStore()
 
-const additional = '["real_path","owner","time","size","perm","volume_status"]'
-
 const createTreeNode = (item: any): TreeNode => {
   return {
     data: item,
